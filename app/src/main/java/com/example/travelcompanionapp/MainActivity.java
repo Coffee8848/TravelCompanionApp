@@ -1,6 +1,7 @@
 package com.example.travelcompanionapp;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -40,6 +41,24 @@ public class MainActivity extends AppCompatActivity {
         spinnerCategory.setAdapter(categoriesAdapter);
         spinnerFrom.setAdapter(currencyAdapter);
         spinnerTo.setAdapter(currencyAdapter);
+        //给按钮加事件
+        buttonConvert.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String inputValue = editTextValue.getText().toString();
+                String category = spinnerCategory.getSelectedItem().toString();
+                String fromUnit = spinnerFrom.getSelectedItem().toString();
+                String toUnit = spinnerTo.getSelectedItem().toString();
+
+                if (inputValue.isEmpty()){
+                    editTextValue.setError("Please enter a value");
+                    return;
+                }
+                textViewResult.setText(
+                        "Category:" + category + "value" + "From" +fromUnit + "to"+ toUnit+"is"
+                );
+            }
+        });
 
 
 
@@ -51,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
     }
-    private Spinner spinnerCategory
+    private Spinner spinnerCategory;
     private Spinner spinnerFrom;
     private Spinner spinnerTo;
     private EditText editTextValue;
