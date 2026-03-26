@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
                 this, android.R.layout.simple_spinner_item,temperatureUnits);
         temperatureAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         ArrayAdapter<String> currencyAdapter = new ArrayAdapter<>(
-                this, android.R.layout.simple_spinner_item,fuelUnits);
+                this, android.R.layout.simple_spinner_item,currency);
         currencyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         ArrayAdapter<String> fuelAdapter = new ArrayAdapter<>(
@@ -52,9 +52,9 @@ public class MainActivity extends AppCompatActivity {
 
 
         spinnerCategory.setAdapter(categoriesAdapter);
-        spinnerCategory.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        spinnerCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selectedCategory = spinnerCategory.getSelectedItem().toString();
                 if (selectedCategory.equals("Currency")) {
                     spinnerFrom.setAdapter(currencyAdapter);
@@ -68,10 +68,13 @@ public class MainActivity extends AppCompatActivity {
                 }
 
             }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
 
         });
-        spinnerFrom.setAdapter(fuelAdapter);
-        spinnerTo.setAdapter(fuelAdapter);
+        spinnerFrom.setAdapter(currencyAdapter);
+        spinnerTo.setAdapter(currencyAdapter);
 
         //给按钮加事件
         buttonConvert.setOnClickListener(new View.OnClickListener() {
@@ -82,12 +85,12 @@ public class MainActivity extends AppCompatActivity {
                 String fromUnit = spinnerFrom.getSelectedItem().toString();
                 String toUnit = spinnerTo.getSelectedItem().toString();
 
-                double value = Double.parseDouble(inputValue);
+
                 if (inputValue.isEmpty()){
                     editTextValue.setError("Please enter a value");
                     return;
                 }
-
+                double value = Double.parseDouble(inputValue);
                 if (category.equals("Currency")) {
                     double result = convertCurrency(fromUnit, toUnit, value);
                     textViewResult.setText(value + " " + fromUnit + " = " + result + " " + toUnit);
@@ -95,6 +98,9 @@ public class MainActivity extends AppCompatActivity {
                     double result = convertTemperature(fromUnit, toUnit, value);
                     textViewResult.setText(value + " " + fromUnit + " = " + result + " " + toUnit);
 
+                }else if (category.equals("Fuel")) {
+                    double result = convertFuel(fromUnit, toUnit, value);
+                    textViewResult.setText(value + " " + fromUnit + " = " + result + " " + toUnit);
                 }
 
 
@@ -185,32 +191,30 @@ public class MainActivity extends AppCompatActivity {
                 return 0;
         }
     }
-    private double convertFuel(String from, String to, double value){
-        double C ;
+    private double convertFuel(String from, String to, double value) {
+        if (from.equals(to)) {
+            return value;
+        }
 
-        switch (from) {
-            case "Celsius":
-                C = value;
-                break;
-            case "Fahrenheit":
-                C = (value - 32) / 1.8;
-                break;
-            case "Kelvin":
-                C = value - 273.15;
-                break;
-            default:
-                return 0;
+        if (from.equals("mpg") && to.equals("km/L")) {
+            return value * 0.425;
+        } else if (from.equals("km/L") && to.equals("mpg")) {
+            return value / 0.425;
         }
-        switch (to) {
-            case "Celsius":
-                return C;
-            case "Fahrenheit":
-                return (C * 1.8) + 32;
-            case "Kelvin":
-                return C + 273.15;
-            default:
-                return 0;
+
+        else if (from.equals("gallon") && to.equals("liter")) {
+            return value * 3.785;
+        } else if (from.equals("liter") && to.equals("gallon")) {
+            return value / 3.785;
         }
+
+        else if (from.equals("nautical mile") && to.equals("kilometer")) {
+            return value * 1.852;
+        } else if (from.equals("kilometer") && to.equals("nautical mile")) {
+            return value / 1.852;
+        }
+
+
+        return 0;
     }
-
     }
